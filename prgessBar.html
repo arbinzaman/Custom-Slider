@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loan Details with Progress Bar</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        justify-content: center;
+      }
+      .tabs-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .tab {
+        flex-grow: 1;
+        text-align: center;
+        padding: 10px 0;
+        cursor: pointer;
+        font-weight: bold;
+        color: black;
+      }
+      .tab-active {
+        color: black;
+      }
+      .tab-bad.tab-active {
+        color: red;
+      }
+      .tab-poor.tab-active {
+        color: orange;
+      }
+      .tab-average.tab-active {
+        color: yellow;
+      }
+      .tab-good.tab-active {
+        color: lightgreen;
+      }
+      .tab-excellent.tab-active {
+        color: green;
+      }
+      .progress-bar-container {
+        width: 100%;
+        height: 30px;
+        display: flex;
+        cursor: default;
+        position: relative;
+      }
+      .progress-segment {
+        height: 100%;
+        text-align: center;
+        line-height: 30px;
+        color: white;
+        font-weight: bold;
+        flex-grow: 1;
+        position: relative;
+      }
+      .segment-bad {
+        background-color: red;
+      }
+      .segment-poor {
+        background-color: orange;
+      }
+      .segment-average {
+        background-color: yellow;
+        color: black;
+      }
+      .segment-good {
+        background-color: lightgreen;
+        color: black;
+      }
+      .segment-excellent {
+        background-color: green;
+      }
+
+      .loan-table-container {
+        width: 100%;
+        overflow-x: auto; /* Add this line */
+        padding: 0;
+        max-width: 100%;
+      }
+
+      .loan-table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+      }
+      .loan-table th,
+      .loan-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      .loan-table th {
+        background-color: #f2f2f2;
+      }
+      .hover-text {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #ddd;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        pointer-events: none;
+      }
+      .image-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 20px 0;
+        font: bold;
+        padding-left: 20%;
+      }
+
+      .image-container div {
+        flex: 1;
+        text-align: center;
+        margin: 10px;
+      }
+
+      .image-container img {
+        max-width: 100%;
+        height: auto;
+        max-height: 150px; /* Adjust the height to make the images medium-sized */
+      }
+
+      @media (max-width: 768px) {
+        .tab {
+          flex: 1 1 100%;
+        }
+        .loan-table {
+          width: 70%;
+          padding: 30px;
+        }
+        .image-container img {
+          max-width: 30%;
+          margin: 0 auto;
+        }
+        .image-container {
+          padding-left: 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .image-container img {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tabs-container">
+      <div class="tab tab-bad tab-active" data-score="Bad Score">Bad</div>
+      <div class="tab tab-poor" data-score="Poor Score">Poor</div>
+      <div class="tab tab-average" data-score="Average Score">Average</div>
+      <div class="tab tab-good" data-score="Good Score">Good</div>
+      <div class="tab tab-excellent" data-score="Excellent Score">
+        Excellent
+      </div>
+    </div>
+
+    <div
+      class="progress-bar-container"
+      onmousemove="showHoverNumber(event)"
+      onclick="changeScore(event)"
+    >
+      <div
+        class="progress-segment segment-bad"
+        data-score="Bad Score"
+        data-range="300-550"
+      ></div>
+      <div
+        class="progress-segment segment-poor"
+        data-score="Poor Score"
+        data-range="550-650"
+      ></div>
+      <div
+        class="progress-segment segment-average"
+        data-score="Average Score"
+        data-range="650-700"
+      ></div>
+      <div
+        class="progress-segment segment-good"
+        data-score="Good Score"
+        data-range="700-750"
+      ></div>
+      <div
+        class="progress-segment segment-excellent"
+        data-score="Excellent Score"
+        data-range="750-850"
+      ></div>
+      <div class="hover-text" id="hoverText"></div>
+    </div>
+    <div class="image-container">
+      <div>
+        <img src="img/Home-Loan.png" alt="" />
+        <p>Home Loan</p>
+      </div>
+      <div>
+        <img src="img/Car-Loan.png" alt="" />
+        <p>Car Loan</p>
+      </div>
+      <div>
+        <img src="img/Loan.png" alt="" />
+        <p>Loan</p>
+      </div>
+      <div>
+        <img src="img/Credit-card.png" alt="" />
+        <p>Credit Card</p>
+      </div>
+    </div>
+    <div id="loanDetails"></div>
+
+    <script>
+      const loanData = {
+        "Bad Score": {
+          "30 Year Fixed Mortgage": ["$0", "No Approval", "$0", "$0"],
+          "60 Month New Auto": ["$35,000", "17.54%", "$880", "$17802"],
+          "Personal Loan (2yrs)": ["$5,000", "21.14%", "$257", "$1,175"],
+          "Revolving Credit": ["$2,500", "18.09%", "$2,562.43", "$62.43"],
+        },
+        "Poor Score": {
+          "30 Year Fixed Mortgage": [
+            "$250,000",
+            "7.5-8.0%",
+            "$1,799",
+            "$397,593",
+          ],
+          "60 Month New Auto": ["$35,000", "12.632%", "$790", "$12,387"],
+          "Personal Loan (2yrs)": ["$5,000", "18.93%", "$252", "$1,045"],
+          "Revolving Credit": ["$2,500", "26.64%", "$2,555.32", "$55.32"],
+        },
+        "Average Score": {
+          "30 Year Fixed Mortgage": [
+            "$250,000",
+            "6.8-7.0%",
+            "$1,661",
+            "$348,650",
+          ],
+          "60 Month New Auto": ["$35,000", "10.42%", "$751", "$10,054"],
+          "Personal Loan (2yrs)": ["$5,000", "17.41%", "$248", "$957"],
+          "Revolving Credit": ["$2,500", "24.15%", "$2,550.10", "$50.10"],
+        },
+        "Good Score": {
+          "30 Year Fixed Mortgage": ["$250,000", "6.70%", "$1,613", "$330,750"],
+          "60 Month New Auto": ["$35,000", "8.66%", "$721", "$8,249"],
+          "Personal Loan (2yrs)": ["$5,000", "15.86%", "$244", "$868"],
+          "Revolving Credit": ["$2,500", "22.95%", "$2,547.59", "$47.59"],
+        },
+        "Excellent Score": {
+          "30 Year Fixed Mortgage": ["$250,000", "6.40%", "$1,577", "$317,560"],
+          "60 Month New Auto": ["$35,000", "7.55%", "$702", "$7,125"],
+          "Personal Loan (2yrs)": ["$5,000", "13.40%", "$239", "$728"],
+          "Revolving Credit": ["$2,500", "18.09%", "$2,537.44", "$37.44"],
+        },
+      };
+
+      function showTab(scoreCategory) {
+        const loanDetailsDiv = document.getElementById("loanDetails");
+        loanDetailsDiv.innerHTML = "";
+
+        const data = loanData[scoreCategory];
+
+        const table = document.createElement("table");
+        table.className = "loan-table";
+
+        const thead = document.createElement("thead");
+        const headerRow1 = document.createElement("tr");
+        // const headerRow2 = document.createElement("tr");
+
+        const thBlank = document.createElement("th");
+        thBlank.rowSpan = 2;
+        thBlank.textContent = "Loan Type";
+        headerRow1.appendChild(thBlank);
+
+        for (let loanType of Object.keys(data)) {
+          const th = document.createElement("th");
+          th.colSpan = 1;
+          th.textContent = loanType;
+          headerRow1.appendChild(th);
+        }
+
+        table.appendChild(headerRow1);
+
+        const details = [
+          "Loan Amount",
+          "APR",
+          "Monthly Payment",
+          "Total Interest",
+        ];
+
+        for (let detail of details) {
+          const th = document.createElement("th");
+          th.textContent = detail;
+          // headerRow2.appendChild(th);
+        }
+
+        // table.appendChild(headerRow2);
+
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+
+        for (let i = 0; i < details.length; i++) {
+          const row = document.createElement("tr");
+
+          const tdType = document.createElement("td");
+          tdType.textContent = details[i];
+          row.appendChild(tdType);
+
+          for (let key of Object.keys(data)) {
+            const td = document.createElement("td");
+            td.textContent = data[key][i];
+            row.appendChild(td);
+          }
+          tbody.appendChild(row);
+        }
+
+        table.appendChild(tbody);
+        loanDetailsDiv.appendChild(table);
+      }
+
+      function changeScore(event) {
+        const segment = event.target;
+        const scoreCategory = segment.dataset.score;
+        showTab(scoreCategory);
+        highlightTab(scoreCategory);
+      }
+
+      function showHoverNumber(event) {
+        const segment = event.target;
+        const range = segment.dataset.range;
+        const [min, max] = range.split("-").map(Number);
+        const width = segment.offsetWidth;
+        const offsetX = event.offsetX;
+
+        const hoverNumber = Math.floor(min + (max - min) * (offsetX / width));
+
+        const hoverText = document.getElementById("hoverText");
+        hoverText.textContent = hoverNumber;
+        hoverText.style.display = "block";
+        hoverText.style.left = event.pageX + 10 + "px";
+        hoverText.style.top = event.pageY - 10 + "px";
+      }
+
+      function highlightTab(scoreCategory) {
+        const tabs = document.querySelectorAll(".tab");
+        tabs.forEach((tab) => {
+          if (tab.dataset.score === scoreCategory) {
+            tab.classList.add("tab-active");
+          } else {
+            tab.classList.remove("tab-active");
+          }
+        });
+      }
+
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", (event) => {
+          const scoreCategory = event.target.dataset.score;
+          showTab(scoreCategory);
+          highlightTab(scoreCategory);
+        });
+      });
+
+      showTab("Bad Score");
+
+      document.addEventListener("mousemove", (event) => {
+        const hoverText = document.getElementById("hoverText");
+        if (!event.target.classList.contains("progress-segment")) {
+          hoverText.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

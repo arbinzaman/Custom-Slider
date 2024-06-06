@@ -1,0 +1,106 @@
+
+body {
+    font-family: Arial, sans-serif;
+  }
+  .tabs-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .tab {
+    flex-grow: 1;
+    text-align: center;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
+  }
+  .tab-active {
+    color: black;
+  }
+  .tab-bad.tab-active {
+    color: red;
+  }
+  .tab-poor.tab-active {
+    color: orange;
+  }
+  .tab-average.tab-active {
+    color: yellow;
+  }
+  .tab-good.tab-active {
+    color: lightgreen;
+  }
+  .tab-excellent.tab-active {
+    color: green;
+  }
+  .progress-bar-container {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    cursor: default;
+    position: relative;
+  }
+  .progress-segment {
+    height: 100%;
+    text-align: center;
+    line-height: 30px;
+    color: white;
+    font-weight: bold;
+    flex-grow: 1;
+    position: relative;
+  }
+  .segment-bad {
+    background-color: red;
+  }
+  .segment-poor {
+    background-color: orange;
+  }
+  .segment-average {
+    background-color: yellow;
+    color: black;
+  }
+  .segment-good {
+    background-color: lightgreen;
+    color: black;
+  }
+  .segment-excellent {
+    background-color: green;
+  }
+
+  .loan-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  .loan-table th,
+  .loan-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  .loan-table th {
+    background-color: #f2f2f2;
+  }
+  .hover-text {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+  }
+  /* @media screen and (max-width: 768px) {
+    .tabs-container {
+      flex-wrap: wrap;
+    }
+    .tab {
+      flex-basis: 48%;
+      margin-bottom: 5px;
+    }
+  }
+
+  @media screen and (max-width: 576px) {
+    .tab {
+      flex-basis: 100%;
+    }
+  } */
