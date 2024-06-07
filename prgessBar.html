@@ -341,8 +341,8 @@
         const hoverText = document.getElementById("hoverText");
         hoverText.textContent = hoverNumber;
         hoverText.style.display = "block";
-        hoverText.style.left = event.pageX + 10 + "px";
-        hoverText.style.top = event.pageY - 10 + "px";
+        hoverText.style.left = event.pageX -0 + "px"; // Adjust this value as needed
+        hoverText.style.top = event.pageY - 60 + "px";
       }
 
       function highlightTab(scoreCategory) {
